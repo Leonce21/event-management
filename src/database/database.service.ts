@@ -1,49 +1,32 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-  OnModuleDestroy,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 
 @Injectable()
-export class DatabaseService implements OnModuleInit, OnModuleDestroy {
+export class DatabaseService {
+  private static pool: Pool;
   private readonly logger = new Logger(DatabaseService.name);
-  private pool: Pool;
 
   constructor() {
-    const dbUrl = process.env.DATABASE_URL;
+    if (!DatabaseService.pool) {
+      const dbUrl = process.env.DATABASE_URL;
 
-    console.log('🔍 DATABASE_URL:', dbUrl ? 'LOADED ✅' : '❌ MISSING');
+      if (!dbUrl) {
+        throw new Error('DATABASE_URL not defined');
+      }
 
-    if (!dbUrl) {
-      throw new Error('DATABASE_URL is not defined in environment variables');
+      DatabaseService.pool = new Pool({
+        connectionString: dbUrl,
+        ssl: dbUrl.includes('localhost')
+          ? false
+          : { rejectUnauthorized: false },
+        max: 5,
+      });
+
+      this.logger.log('✅ PostgreSQL pool initialized');
     }
-
-    this.pool = new Pool({
-      connectionString: dbUrl,
-    });
-
-    this.pool.on('connect', () => {
-      this.logger.log('✅ PostgreSQL connected successfully');
-    });
-
-    this.pool.on('error', (err) => {
-      this.logger.error('❌ PostgreSQL connection error', err);
-    });
-  }
-
-  async onModuleInit() {
-    await this.pool.query('SELECT 1');
-    this.logger.log('📦 Database ready');
-  }
-
-  async onModuleDestroy() {
-    await this.pool.end();
-    this.logger.log('🔌 PostgreSQL disconnected');
   }
 
   query(text: string, params?: any[]) {
-    return this.pool.query(text, params);
+    return DatabaseService.pool.query(text, params);
   }
 }
