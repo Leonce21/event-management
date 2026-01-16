@@ -1,0 +1,20 @@
+<app-page-breadcrumb pageTitle="Event Table" />
+<div class="space-y-6">
+  <div>
+    <app-component-card title="List of events">
+      <!-- Header action: Add Event button -->
+      <button card-header
+              (click)="openAdd()"
+              class="ml-2 inline-flex items-center gap-2 rounded-md bg-brand-500 px-3 py-2 text-sm font-medium text-white hover:bg-brand-600">
+        <!-- simple plus icon -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Add Event
+      </button>
+
+      <!-- Event table child -->
+      <app-event-table #tableComp></app-event-table>
+    </app-component-card>
+  </div>
+</div>
