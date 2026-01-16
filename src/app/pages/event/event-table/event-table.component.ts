@@ -8,6 +8,9 @@ import { ButtonComponent } from '../../../shared/components/ui/button/button.com
 import { TableDropdownComponent } from '../../../shared/components/common/table-dropdown/table-dropdown.component';
 import { ModalComponent } from '../../../shared/components/ui/modal/modal.component';
 
+import { environment } from '../../../../environments/environment.development';
+
+
 interface Event {
   id: number;
   title: string;
@@ -67,7 +70,7 @@ export class EventTableComponent implements OnInit {
   isDeleting = false;
   deleteError: string | null = null;
 
-  private readonly API = 'http://localhost:3000/api/events';
+  private readonly API = `${environment.apiUrl}/events`;
 
   constructor(private http: HttpClient) {}
 
